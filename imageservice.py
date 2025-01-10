@@ -1,21 +1,20 @@
-from flask import Flask, jsonify, send_file
-import os
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 
-IMAGE_FOLDER = 'static/images'
-images = os.listdir(IMAGE_FOLDER)
+# Map random numbers to image file paths
+image_map = {
+    0: 'images/image1.jpg',
+    1: 'images/image2.jpg',
+    2: 'images/image3.jpg',
+    3: 'images/image4.jpg',
+    4: 'images/image5.jpg'
+}
 
-@app.route('/image/<int:index>', methods=['GET'])
-def get_image(index):
-    if not images:
-        return jsonify({'error': 'No images found'}), 404
-    # Get the correct image based on modulo
-    image_name = images[index % len(images)]
-    image_path = os.path.join(IMAGE_FOLDER, image_name)
+@app.route('/image/<int:number>', methods=['GET'])
+def get_image(number):
+    image_path = image_map.get(number, 'images/default.jpg')  # Default image if number is out of range
+    return jsonify({'imagePath': f'/static/{image_path}'})
 
-    # Return the image path (or send the file itself)
-    return send_file(image_path)
-
-if __name__ == '__main__':
-    app.run(port=5001)  # Runs the server on localhost:5001
+if __name__ == "__main__":
+    app.run(port=5002, debug=True)  # Runs on a different port
