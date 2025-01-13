@@ -1,8 +1,10 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 import os
 import json
 
 app = Flask(__name__, static_folder='static')
+CORS(app)
 
 # Load image data dynamically from the static folder
 def load_image_data():

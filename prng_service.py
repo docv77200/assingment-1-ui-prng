@@ -1,9 +1,11 @@
 # generating random numbers
 
 from flask import Flask, jsonify
+from flask_cors import CORS
 import random
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/prng', methods=['GET'])
 def prng():
