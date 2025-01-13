@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 @app.route('/prng', methods=['GET'])
 def prng():
-    random_number = random.randint(0, 4)  # Random number between 0 and 4
+    random_number = random.randint(0, 8)  # Random number between 0 and 8
     return jsonify({'randomNumber': random_number})
 
 if __name__ == "__main__":

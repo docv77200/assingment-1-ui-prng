@@ -1,20 +1,17 @@
 from flask import Flask, jsonify
+import json
 
 app = Flask(__name__)
 
-# Map random numbers to image file paths
-image_map = {
-    0: 'images/image1.jpg',
-    1: 'images/image2.jpg',
-    2: 'images/image3.jpg',
-    3: 'images/image4.jpg',
-    4: 'images/image5.jpg'
-}
+# Load image data from JSON
+with open('image_data.json', 'r') as f:
+    image_data = json.load(f)
 
 @app.route('/image/<int:number>', methods=['GET'])
 def get_image(number):
-    image_path = image_map.get(number, 'images/default.jpg')  # Default image if number is out of range
-    return jsonify({'imagePath': f'/static/{image_path}'})
+    # Fetch URL from JSON or provide a default
+    image_url = image_data["images"].get(str(number), "https://example.com/images/default.jpg")
+    return jsonify({'imageURL': image_url})
 
 if __name__ == "__main__":
-    app.run(port=5002, debug=True)  # Runs on a different port
+    app.run(port=5002, debug=True)
