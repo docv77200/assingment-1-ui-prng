@@ -9,12 +9,12 @@ document.getElementById('generateButton').addEventListener('click', async functi
             .then(data => data.randomNumber);
 
         // Step (b): Use the random number to call the Image Service
-        let imagePath = await fetch(`http://127.0.0.1:5002/image/${randomNumber}`)
+        let imageUrl = await fetch(`http://127.0.0.1:5002/image/${randomNumber}`)
             .then(response => response.json())
-            .then(data => data.imagePath);
+            .then(data => data.imageURL); // Correct key is 'imageURL'
 
         // Step (c): Display the image
-        imageContainer.innerHTML = `<img src="http://127.0.0.1:5002/static/${imagePath}" alt="Random Image">`;
+        imageContainer.innerHTML = `<img src="${imageUrl}" alt="Random Image">`;
     } catch (error) {
         imageContainer.innerHTML = `<p style="color:red;">Error loading image. Please try again.</p>`;
         console.error(error);
