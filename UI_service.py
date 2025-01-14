@@ -1,3 +1,4 @@
+# UI Service with File-Based Communication
 from flask import Flask, render_template, jsonify
 import os
 import time
@@ -32,7 +33,7 @@ def generate_image():
         random_number = read_from_file(prng_file)
         if random_number and random_number.isdigit():
             break
-        time.sleep(1)
+        time.sleep(0.1)  # Reduce polling interval
 
     # Step 3: Write the random number to image-service.txt
     write_to_file(image_file, random_number)
@@ -42,7 +43,7 @@ def generate_image():
         image_path = read_from_file(image_file)
         if image_path:
             break
-        time.sleep(1)
+        time.sleep(0.1)  # Reduce polling interval
 
     # Return the image path to the frontend
     return jsonify({'imagePath': image_path})
