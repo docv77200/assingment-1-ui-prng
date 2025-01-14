@@ -22,8 +22,8 @@ def index():
 
 @app.route('/generate', methods=['POST'])
 def generate_image():
-    prng_file = "prng-service.txt"
-    image_file = "image-service.txt"
+    prng_file = "prng_service.txt"
+    image_file = "imageservice.txt"
 
     # Step 1: Write "run" to prng-service.txt
     write_to_file(prng_file, "run")

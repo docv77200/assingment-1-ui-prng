@@ -4,7 +4,7 @@ import random
 import time
 
 def prng_service():
-    prng_file = "prng-service.txt"
+    prng_file = "prng_service.txt"
     IMAGE_COUNT = 6
 
     while True:

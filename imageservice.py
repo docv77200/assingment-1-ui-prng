@@ -1,5 +1,19 @@
+import os  # To check file existence and handle file operations
+import json  # To load JSON data from the image_data.json file
+import time  # To introduce a polling interval
+
+def load_image_data():
+    """
+    Load the image data from the static JSON file.
+    """
+    with open('static/image_data.json', 'r') as f:
+        return json.load(f)
+
 def image_service():
-    image_file = "image-service.txt"
+    """
+    Image service that listens for random numbers in the text file and maps them to image paths.
+    """
+    image_file = "imageservice.txt"
 
     while True:
         if os.path.exists(image_file):
