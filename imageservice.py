@@ -1,38 +1,34 @@
-import os  # To check file existence and handle file operations
-import json  # To load JSON data from the image_data.json file
-import time  # To introduce a polling interval
-
-def load_image_data():
-    """
-    Load the image data from the static JSON file.
-    """
-    with open('static/image_data.json', 'r') as f:
-        return json.load(f)
+import os
+import time
 
 def image_service():
-    """
-    Image service that listens for random numbers in the text file and maps them to image paths.
-    """
-    image_file = "imageservice.txt"
+    file_path = "imageservice.txt"
+    image_folder = "images"  # Folder where images are stored
+
+    # Load all image file paths
+    image_files = [file for file in os.listdir(image_folder) if file.lower().endswith((".jpg", ".png", ".jpeg"))]
+    num_images = len(image_files)
+
+    if num_images == 0:
+        raise RuntimeError("No images found in the 'images' folder.")
 
     while True:
-        if os.path.exists(image_file):
-            with open(image_file, "r") as f:
-                content = f.read().strip()
+        # Check if the file exists and has input
+        if os.path.exists(file_path):
+            with open(file_path, "r") as file:
+                data = file.read().strip()
 
-            if content.isdigit():  # Check if the content is a valid number
-                random_number = int(content)
-                image_data = load_image_data()
+            if data.isdigit():
+                index = int(data) % num_images  # Handle modulo logic
+                selected_image = image_files[index]
+                image_path = os.path.join(image_folder, selected_image)
 
-                # Get the corresponding image path relative to static
-                image_path = image_data["images"].get(str(random_number), "/static/images/default.jpg")
-                print(f"Image Service: Returned image path {image_path}")
+                # Write the selected image path back to the file
+                with open(file_path, "w") as file:
+                    file.write(image_path)
 
-                # Overwrite the file with the relative image path
-                with open(image_file, "w") as f:
-                    f.write(image_path)
-
-        time.sleep(0.1)  # Reduce polling interval
+        # Sleep to prevent excessive CPU usage
+        time.sleep(0.1)
 
 if __name__ == "__main__":
     image_service()

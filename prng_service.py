@@ -1,34 +1,26 @@
-import os
 import random
 import time
+import os
 
 def prng_service():
-    prng_file = "prng_service.txt"
-    IMAGE_COUNT = 6
+    file_path = "prng_service.txt"
 
     while True:
-        if os.path.exists(prng_file):
-            with open(prng_file, "r") as f:
-                command = f.read().strip()
-                print(f"PRNG Service: Read command '{command}' from {prng_file}")
+        # Check if the file exists and contains "run"
+        if os.path.exists(file_path):
+            with open(file_path, "r") as file:
+                command = file.read().strip()
 
             if command == "run":
-                print("PRNG Service: Detected 'run' command")
+                # Generate a pseudo-random number
+                random_number = random.randint(0, 100)  # Example range: 0 to 100
 
-                # Seed the random number generator dynamically
-                random.seed(time.time())  # Seed with current time
-                random_number = random.randint(0, 100) % IMAGE_COUNT
-                print(f"PRNG Service: Generated random number {random_number}")
+                # Write the random number back to the file
+                with open(file_path, "w") as file:
+                    file.write(str(random_number))
 
-                # Overwrite the file with the random number
-                with open(prng_file, "w") as f:
-                    f.write(str(random_number))
-                    print(f"PRNG Service: Wrote random number {random_number} to {prng_file}")
-            elif command.isdigit():
-                # Skip processing if the file already contains a random number
-                print(f"PRNG Service: File already contains random number '{command}'. Skipping...")
-        
-        time.sleep(0.1)  # Prevent busy-waiting
+        # Sleep to prevent excessive CPU usage
+        time.sleep(0.1)
 
 if __name__ == "__main__":
     prng_service()
