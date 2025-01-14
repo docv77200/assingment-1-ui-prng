@@ -14,6 +14,9 @@ def prng_service():
 
             if command == "run":
                 print("PRNG Service: Detected 'run' command")
+
+                # Seed the random number generator dynamically
+                random.seed(time.time())  # Seed with current time
                 random_number = random.randint(0, 100) % IMAGE_COUNT
                 print(f"PRNG Service: Generated random number {random_number}")
 
