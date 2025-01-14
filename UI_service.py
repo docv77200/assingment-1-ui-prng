@@ -28,22 +28,28 @@ def generate_image():
     # Step 1: Write "run" to prng-service.txt
     write_to_file(prng_file, "run")
 
-    # Step 2: Wait for PRNG Service to respond
+    # Step 2: Wait for PRNG Service to respond with a timeout
+    start_time = time.time()
     while True:
         random_number = read_from_file(prng_file)
         if random_number and random_number.isdigit():
             break
-        time.sleep(0.1)  # Reduce polling interval
+        if time.time() - start_time > 5:  # Timeout after 5 seconds
+            return jsonify({'error': 'PRNG Service timed out'}), 500
+        time.sleep(0.05)  # Reduced polling interval
 
     # Step 3: Write the random number to image-service.txt
     write_to_file(image_file, random_number)
 
-    # Step 4: Wait for Image Service to respond
+    # Step 4: Wait for Image Service to respond with a timeout
+    start_time = time.time()
     while True:
         image_path = read_from_file(image_file)
         if image_path:
             break
-        time.sleep(0.1)  # Reduce polling interval
+        if time.time() - start_time > 5:  # Timeout after 5 seconds
+            return jsonify({'error': 'Image Service timed out'}), 500
+        time.sleep(0.05)  # Reduced polling interval
 
     # Return the image path to the frontend
     return jsonify({'imagePath': image_path})
