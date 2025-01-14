@@ -1,30 +1,33 @@
-from flask import Flask, jsonify
-from flask_cors import CORS
 import os
 import json
+import time
 
-app = Flask(__name__, static_folder='static')
-CORS(app)
-
-# Load image data dynamically from the static folder
+# Load image data from JSON
 def load_image_data():
-    # Construct the full path to the JSON file in the static folder
-    json_path = os.path.join(app.static_folder, 'image_data.json')
-    print(f"Looking for JSON file at: {json_path}")  # Debugging path issue
-    if not os.path.exists(json_path):
-        raise FileNotFoundError(f"JSON file not found at: {json_path}")
-    with open(json_path, 'r') as f:
+    with open('static/image_data.json', 'r') as f:
         return json.load(f)
 
-@app.route('/image/<int:number>', methods=['GET'])
-def get_image(number):
-    try:
-        image_data = load_image_data()
-        # Fetch the URL from the JSON file or return a default image URL
-        image_url = image_data["images"].get(str(number), "https://example.com/images/default.jpg")
-        return jsonify({'imageURL': image_url})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+def image_service():
+    image_file = "imageservice.txt"
+    
+    while True:
+        if os.path.exists(image_file):
+            with open(image_file, "r") as f:
+                content = f.read().strip()
+            
+            if content.isdigit():  # Check if the content is a valid number
+                random_number = int(content)
+                image_data = load_image_data()
+                
+                # Get the corresponding image path
+                image_path = image_data["images"].get(str(random_number), "static/images/default.jpg")
+                print(f"Image Service: Returned image path {image_path}")
+
+                # Overwrite the file with the image path
+                with open(image_file, "w") as f:
+                    f.write(image_path)
+        
+        time.sleep(1)  # Prevent busy-waiting
 
 if __name__ == "__main__":
-    app.run(port=5002, debug=True)
+    image_service()

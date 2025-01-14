@@ -1,20 +1,39 @@
 # generating random numbers
 
-from flask import Flask, jsonify
-from flask_cors import CORS
+import os
 import random
+import time
 
-app = Flask(__name__)
-CORS(app)
+def prng_service():
+    prng_file = "prng_service.txt"
+    IMAGE_COUNT = 6  # Total number of images in the dataset
 
-# Define the number of images
-IMAGE_COUNT = 6  # Replace with the actual number of images in your dataset
+    while True:
+        if os.path.exists(prng_file):
+            with open(prng_file, "r") as f:
+                command = f.read().strip()
+            
+            if command == "run":
+                # Generate a random number
+                random_number = random.randint(0, 100)  # Random range can be large
+                valid_number = random_number % IMAGE_COUNT  # Map to valid index
+                print(f"PRNG Service: Generated random number {random_number}, mapped to {valid_number}")
 
-@app.route('/prng', methods=['GET'])
-def prng():
-    random_number = random.randint(0, 8)  # Generate a number between 0 and 8
-    valid_number = random_number % IMAGE_COUNT  # Map to valid image index
-    return jsonify({'randomNumber': valid_number})  # Return the valid index
+                # Overwrite the file with the valid random number
+                with open(prng_file, "w") as f:
+                    f.write(str(valid_number))
+        
+        time.sleep(1)  # Prevent busy-waiting
 
 if __name__ == "__main__":
-    app.run(port=5001, debug=True)
+    prng_service()
+
+
+
+
+
+
+
+
+
+     
