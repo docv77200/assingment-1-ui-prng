@@ -1,3 +1,4 @@
+# Updated PRNG Service
 import random
 import time
 import os
@@ -29,9 +30,10 @@ def prng_service():
                 # Write "run <random_number>" back to the file
                 with open(file_path, "w") as file:
                     file.write(f"run {random_number}")
+                    file.flush()  # Ensure instant write
 
         # Sleep to prevent excessive CPU usage
-        time.sleep(0.1)
+        time.sleep(0.01)
 
 if __name__ == "__main__":
     prng_service()

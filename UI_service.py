@@ -1,8 +1,20 @@
+# Updated UI Service
 import os
 import time
 import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
+
+def wait_for_file_update(file_path, keyword, timeout=5):
+    start_time = time.time()
+    while time.time() - start_time < timeout:  # Wait max 5 seconds
+        time.sleep(0.01)  # Faster polling
+        if os.path.exists(file_path):
+            with open(file_path, "r") as file:
+                content = file.read().strip()
+                if content.startswith(keyword):
+                    return content
+    return None  # Timeout case
 
 def run_ui():
     prng_file = "prng_service.txt"
@@ -14,38 +26,34 @@ def run_ui():
             file.write("run")
 
         # Wait for PRNG Service to generate a number
-        random_number = None
-        while random_number is None:
-            time.sleep(0.1)
-            if os.path.exists(prng_file):
-                with open(prng_file, "r") as file:
-                    content = file.read().strip()
-                    if content.startswith("run"):
-                        parts = content.split()
-                        if len(parts) == 2 and parts[1].isdigit():
-                            random_number = int(parts[1])
-                            # Clear the file
-                            with open(prng_file, "w") as clear_file:
-                                clear_file.write("")
+        random_number_content = wait_for_file_update(prng_file, "run", timeout=3)
+        if random_number_content:
+            parts = random_number_content.split()
+            if len(parts) == 2 and parts[1].isdigit():
+                random_number = int(parts[1])
+            else:
+                messagebox.showerror("Error", "Invalid response from PRNG Service")
+                return
+        else:
+            messagebox.showerror("Error", "PRNG Service did not respond in time")
+            return
 
         # Pass the random number to Image Service
         with open(image_file, "w") as file:
             file.write(f"run {random_number}")
 
         # Wait for Image Service to return an image path
-        image_path = None
-        while image_path is None:
-            time.sleep(0.1)
-            if os.path.exists(image_file):
-                with open(image_file, "r") as file:
-                    content = file.read().strip()
-                    if content.startswith("run"):
-                        parts = content.split(maxsplit=1)
-                        if len(parts) == 2:
-                            image_path = parts[1]
-                            # Clear the file
-                            with open(image_file, "w") as clear_file:
-                                clear_file.write("")
+        image_path_content = wait_for_file_update(image_file, "run", timeout=5)
+        if image_path_content:
+            parts = image_path_content.split(maxsplit=1)
+            if len(parts) == 2:
+                image_path = parts[1]
+            else:
+                messagebox.showerror("Error", "Invalid response from Image Service")
+                return
+        else:
+            messagebox.showerror("Error", "Image Service did not respond in time")
+            return
 
         # Display the image
         display_image(image_path)

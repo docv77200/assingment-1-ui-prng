@@ -1,3 +1,4 @@
+# Updated Image Service
 import os
 import time
 
@@ -29,9 +30,10 @@ def image_service():
                     # Write "run <image_path>" back to the file
                     with open(file_path, "w") as file:
                         file.write(f"run {image_path}")
+                        file.flush()  # Ensure instant write
 
         # Sleep to prevent excessive CPU usage
-        time.sleep(0.1)
+        time.sleep(0.01)
 
 if __name__ == "__main__":
     image_service()
