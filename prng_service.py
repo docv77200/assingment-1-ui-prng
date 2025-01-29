@@ -24,11 +24,11 @@ def prng_service():
                     raise RuntimeError("No images found in the 'images' folder.")
 
                 # Generate a pseudo-random number within the range of images
-                random_number = random.randint(0, 100) % num_images
+                random_number = random.randint(0, 10) % num_images
 
-                # Write the random number back to the file
+                # Write "run <random_number>" back to the file
                 with open(file_path, "w") as file:
-                    file.write(str(random_number))
+                    file.write(f"run {random_number}")
 
         # Sleep to prevent excessive CPU usage
         time.sleep(0.1)

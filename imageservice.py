@@ -3,6 +3,7 @@ import time
 
 def image_service():
     file_path = "imageservice.txt"
+    prng_file_path = "prng_service.txt"
     image_folder = "images"  # Folder where images are stored
 
     # Load all image file paths
@@ -13,19 +14,21 @@ def image_service():
         raise RuntimeError("No images found in the 'images' folder.")
 
     while True:
-        # Check if the file exists and has input
-        if os.path.exists(file_path):
-            with open(file_path, "r") as file:
+        # Check if PRNG file exists and has input
+        if os.path.exists(prng_file_path):
+            with open(prng_file_path, "r") as file:
                 data = file.read().strip()
 
-            if data.isdigit():
-                index = int(data) % num_images  # Handle modulo logic
-                selected_image = image_files[index]
-                image_path = os.path.join(image_folder, selected_image)
+            if data.startswith("run"):
+                parts = data.split()
+                if len(parts) == 2 and parts[1].isdigit():
+                    index = int(parts[1]) % num_images  # Handle modulo logic
+                    selected_image = image_files[index]
+                    image_path = os.path.join(image_folder, selected_image)
 
-                # Write the selected image path back to the file
-                with open(file_path, "w") as file:
-                    file.write(image_path)
+                    # Write "run <image_path>" back to the file
+                    with open(file_path, "w") as file:
+                        file.write(f"run {image_path}")
 
         # Sleep to prevent excessive CPU usage
         time.sleep(0.1)

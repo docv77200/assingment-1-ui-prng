@@ -20,15 +20,17 @@ def run_ui():
             if os.path.exists(prng_file):
                 with open(prng_file, "r") as file:
                     content = file.read().strip()
-                    if content.isdigit():
-                        random_number = int(content)
-                        # Clear the file
-                        with open(prng_file, "w") as clear_file:
-                            clear_file.write("")
+                    if content.startswith("run"):
+                        parts = content.split()
+                        if len(parts) == 2 and parts[1].isdigit():
+                            random_number = int(parts[1])
+                            # Clear the file
+                            with open(prng_file, "w") as clear_file:
+                                clear_file.write("")
 
         # Pass the random number to Image Service
         with open(image_file, "w") as file:
-            file.write(str(random_number))
+            file.write(f"run {random_number}")
 
         # Wait for Image Service to return an image path
         image_path = None
@@ -37,11 +39,13 @@ def run_ui():
             if os.path.exists(image_file):
                 with open(image_file, "r") as file:
                     content = file.read().strip()
-                    if content:
-                        image_path = content
-                        # Clear the file
-                        with open(image_file, "w") as clear_file:
-                            clear_file.write("")
+                    if content.startswith("run"):
+                        parts = content.split(maxsplit=1)
+                        if len(parts) == 2:
+                            image_path = parts[1]
+                            # Clear the file
+                            with open(image_file, "w") as clear_file:
+                                clear_file.write("")
 
         # Display the image
         display_image(image_path)
